@@ -32,7 +32,7 @@ export default async function BookDetailPage({ params }: PageProps<"/books/[id]"
   if (!book) notFound();
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-8 md:px-8">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 pb-24 pt-8 md:px-8 md:py-8">
       <Link
         href="/"
         className="inline-flex w-fit items-center gap-1.5 text-sm text-ink-muted transition-colors hover:text-ink"

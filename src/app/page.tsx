@@ -57,7 +57,7 @@ export default async function LibraryPage({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 py-8 md:px-8">
+    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 pb-24 pt-8 md:px-8 md:py-8">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-serif text-2xl text-ink">Linger</h1>

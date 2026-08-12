@@ -198,7 +198,7 @@ export function AIActionBar({
             onChange={(e) => setFollowUp(e.target.value)}
             placeholder="Ask anything about this passage…"
             onKeyDown={(e) => e.key === "Enter" && runFollowUp()}
-            className="h-8 text-sm"
+            className="h-8 min-w-0 flex-1 text-sm"
           />
           <Button size="sm" variant="ghost" onClick={runFollowUp} disabled={pending || !followUp.trim()}>
             Ask
