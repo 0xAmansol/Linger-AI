@@ -32,6 +32,12 @@ typography:
     fontSize: "0.6875rem"
     fontWeight: 400
     letterSpacing: "0.05em"
+  scale:
+    title: "1.125rem"
+    quote: "17px"
+    button-sm: "13px"
+    button-lg: "15px"
+    micro-label: "10px"
 rounded:
   card: "3px"
   control: "6px"
@@ -74,7 +80,8 @@ Confirmed visual rejections: no warm-cream-plus-terracotta "AI book app" default
 Restrained strategy: a warm, slightly gray-buff neutral scale carries the whole interface; one deep ink-stamp indigo is the only accent, and it earns its place by rarity.
 
 ### Primary
-- **Ink-Stamp Indigo** (`#2b3a55`): The single accent. Active shelf tab, primary buttons, focus rings, "explained" label text, link color. Deliberately not a purple or a warm terracotta — closer to fountain-pen ink or a library due-date stamp, avoiding the palette the calibration guidance names as the default AI-generated look for literary subjects.
+- **Ink-Stamp Indigo** (`#2b3a55`, light mode): The single accent. Active shelf tab, primary buttons, focus rings, "explained" label text, link color. Deliberately not a purple or a warm terracotta — closer to fountain-pen ink or a library due-date stamp, avoiding the palette the calibration guidance names as the default AI-generated look for literary subjects.
+- **Lamplight Brass** (`#b4915c`, dark mode only): The accent swaps warm for dark mode rather than lightening the same indigo hue — a lightened indigo tested as a bright periwinkle against the near-black dark paper, exactly the "neon accent on near-black" look this direction exists to avoid. Brass also matches "reading at night" more literally than a cooler tone would.
 
 ### Neutral
 - **Paper** (`#eeeae1`): Page background. A gray-buff ivory, cooler and less saturated than a golden parchment cream.
@@ -97,10 +104,14 @@ Restrained strategy: a warm, slightly gray-buff neutral scale carries the whole 
 **Character:** Spectral was chosen because it's a face designed for on-screen literary reading, not for its "book" association alone — it carries the quotes and book titles. The UI chrome deliberately uses the reader's own system font rather than an imported face like Inter, which is exactly what most AI-generated interfaces default to; this keeps the interface feeling native and fast rather than imported. IBM Plex Mono renders only real data (page numbers, dates, call-number-style stamps), never as a "tech" costume.
 
 ### Hierarchy
-- **Display** (400, `text-2xl`/1.5rem, 1.25 line-height, Spectral): Page titles ("Linger", book titles).
-- **Title** (400, `text-lg`/1.125rem, Spectral italic): Quoted passages (`QuoteBlock`) and dialog titles.
-- **Body** (400, `text-sm`/0.875rem, 1.5 line-height, system sans): UI copy, AI response text, personal notes.
-- **Label** (500, `text-[11px]`, 0.05em tracking, uppercase, IBM Plex Mono): Stamped metadata — page/chapter/date, annotation and note counts, AI-insight type labels.
+- **Display** (400, `text-2xl`/1.5rem/24px, 1.25 line-height, Spectral): Page titles ("Linger", book titles).
+- **Title** (400, `text-lg`/1.125rem/18px, Spectral): Dialog titles (`DialogTitle`).
+- **Quote** (400 italic, 17px, Spectral, 1.625 line-height): Captured passages (`QuoteBlock`) — one step down from Title; a quote is content, not a heading, and shouldn't compete with one.
+- **Body** (400, `text-sm`/0.875rem/14px, 1.5 line-height, system sans): UI copy, AI response text, personal notes.
+- **Button Small** (500, 13px, system sans): `Button` `size="sm"` label text.
+- **Button Large** (500, 15px, system sans): `Button` `size="lg"` label text.
+- **Label** (500, 11px, 0.05em tracking, uppercase, IBM Plex Mono): Stamped metadata — page/chapter/date, annotation and note counts, AI-insight type labels, tooltip text.
+- **Micro-label** (500, 10px, uppercase, IBM Plex Mono): The smallest stamps — a book card's reading-status guide tab.
 
 ### Named Rules
 **The Two-Voice Rule.** Spectral speaks for the book (quotes, titles); the system sans speaks for the interface (labels, buttons, controls). A quote never renders in the UI font, and UI chrome never renders in Spectral.

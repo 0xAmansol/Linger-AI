@@ -37,9 +37,13 @@
     --ink-faint: #786e5c;
     --border: #35301f;
     --border-strong: #453f28;
-    --accent: #8fa4cc;
-    --accent-foreground: #14181f;
-    --accent-muted: #6c86b0;
+    /* Warm brass lamplight, not the cool indigo carried over from light mode:
+       that read as a bright periwinkle against near-black in practice — the
+       exact "neon accent on near-black" cliché this direction was chosen to
+       avoid. Shifting warm also matches "reading at night" more literally. */
+    --accent: #b4915c;
+    --accent-foreground: #1d1509;
+    --accent-muted: #c19f6c;
     --highlight: 41 55% 55%;
     --danger: #c97c6f;
     --danger-foreground: #241311;
