@@ -1,7 +1,7 @@
 "use client";
 
-import { useTransition } from "react";
-import { Trash2 } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Check, Copy, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { AIActionBar } from "@/components/ai-action-bar";
@@ -32,12 +32,19 @@ function formatDate(date: Date): string {
 
 export function AnnotationCard({ annotation }: { annotation: AnnotationCardData }) {
   const [pending, startTransition] = useTransition();
+  const [copied, setCopied] = useState(false);
 
   function handleDelete() {
     startTransition(async () => {
       await deleteAnnotation(annotation.id);
       toast.success("Annotation deleted");
     });
+  }
+
+  function handleCopy() {
+    navigator.clipboard.writeText(annotation.sourceText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
   }
 
   const stamp = [
@@ -59,26 +66,32 @@ export function AnnotationCard({ annotation }: { annotation: AnnotationCardData 
           {stamp || formatDate(annotation.createdAt)}
           {stamp ? ` · ${formatDate(annotation.createdAt)}` : ""}
         </span>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-6 opacity-0 transition-opacity group-hover/card:opacity-100"
-              aria-label="Delete annotation"
-            >
-              <Trash2 className="size-3.5" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-56">
-            <p className="mb-2 text-sm text-ink">Delete this annotation?</p>
-            <div className="flex justify-end gap-2">
-              <Button variant="destructive" size="sm" onClick={handleDelete}>
-                Delete
+        <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover/card:opacity-100">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-6"
+            aria-label="Copy passage"
+            onClick={handleCopy}
+          >
+            {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="size-6" aria-label="Delete annotation">
+                <Trash2 className="size-3.5" />
               </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverTrigger>
+            <PopoverContent className="w-56">
+              <p className="mb-2 text-sm text-ink">Delete this annotation?</p>
+              <div className="flex justify-end gap-2">
+                <Button variant="destructive" size="sm" onClick={handleDelete}>
+                  Delete
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       <QuoteBlock text={annotation.sourceText} />

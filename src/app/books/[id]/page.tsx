@@ -5,6 +5,7 @@ import { ArrowLeft, BookOpen } from "lucide-react";
 import { AnnotationCard } from "@/components/annotation-card";
 import { BookCover } from "@/components/book-cover";
 import { CaptureButton } from "@/components/capture-button";
+import { ExportButton } from "@/components/export-button";
 import { ReadingStatusSelect } from "@/components/reading-status-select";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -52,7 +53,10 @@ export default async function BookDetailPage({ params }: PageProps<"/books/[id]"
             {book.publisher && <span>{book.publisher}</span>}
             {book.isbn && <span className="font-mono">ISBN {book.isbn}</span>}
           </div>
-          <ReadingStatusSelect bookId={book.id} status={book.readingStatus} />
+          <div className="flex items-center gap-2">
+            <ReadingStatusSelect bookId={book.id} status={book.readingStatus} />
+            {book.annotations.length > 0 && <ExportButton bookId={book.id} />}
+          </div>
         </div>
       </header>
 
