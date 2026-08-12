@@ -5,7 +5,7 @@ declare global {
   var __prisma: PrismaClient | undefined;
 }
 
-function createClient() {
+function createClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error(
@@ -16,10 +16,20 @@ function createClient() {
   return new PrismaClient({ adapter });
 }
 
-// Reuse the client across Next.js dev-server hot reloads instead of
-// exhausting Postgres connections with a fresh client per edit.
-export const db = globalThis.__prisma ?? createClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalThis.__prisma = db;
+function getClient(): PrismaClient {
+  if (!globalThis.__prisma) {
+    globalThis.__prisma = createClient();
+  }
+  return globalThis.__prisma;
 }
+
+// Lazy: constructing PrismaClient (and validating DATABASE_URL) only happens
+// on first real use, not at module import time — Next.js imports every route
+// module during its build-time page-data collection, so an eager client
+// would fail the build whenever DATABASE_URL isn't set, even for routes
+// nothing has rendered yet.
+export const db: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getClient() as object, prop, receiver);
+  },
+});
