@@ -41,7 +41,7 @@ export async function createBook(input: CreateBookInput) {
     },
   });
 
-  revalidatePath("/");
+  revalidatePath("/library");
   return book;
 }
 
@@ -54,7 +54,7 @@ export async function updateReadingStatus(bookId: string, status: ReadingStatus)
     data: { readingStatus: status },
   });
 
-  revalidatePath("/");
+  revalidatePath("/library");
   revalidatePath(`/books/${bookId}`);
 }
 
@@ -74,5 +74,5 @@ export async function deleteBook(bookId: string) {
   if (!user) throw new Error("Not signed in.");
 
   await db.book.delete({ where: { id: bookId, userId: user.id } });
-  revalidatePath("/");
+  revalidatePath("/library");
 }

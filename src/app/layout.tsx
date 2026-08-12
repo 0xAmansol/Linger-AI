@@ -38,7 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${spectral.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${spectral.variable} ${plexMono.variable} h-full scroll-smooth antialiased`}
       suppressHydrationWarning
     >
       {/*

@@ -49,7 +49,7 @@ export async function createAnnotation(input: CreateAnnotationInput) {
   await db.book.update({ where: { id: book.id }, data: { updatedAt: new Date() } });
 
   revalidatePath(`/books/${input.bookId}`);
-  revalidatePath("/");
+  revalidatePath("/library");
   return annotation;
 }
 

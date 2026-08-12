@@ -19,9 +19,11 @@ const DESKTOP_INDENT = ["md:ml-0", "md:ml-2", "md:ml-3", "md:ml-4", "md:ml-5"];
 export function ShelfRail({
   active,
   counts,
+  basePath = "/library",
 }: {
   active: ReadingStatus | "ALL";
   counts: Record<string, number>;
+  basePath?: string;
 }) {
   return (
     <nav
@@ -34,7 +36,7 @@ export function ShelfRail({
         return (
           <Link
             key={shelf.value}
-            href={shelf.value === "ALL" ? "/" : `/?status=${shelf.value}`}
+            href={shelf.value === "ALL" ? basePath : `${basePath}?status=${shelf.value}`}
             className={cn(
               "flex shrink-0 items-center justify-between gap-2 whitespace-nowrap rounded-control px-3 py-1.5 text-sm transition-[margin,background-color,color] md:whitespace-normal md:rounded-r-none md:rounded-l-card md:border md:border-r-0",
               isActive ? "md:ml-0" : DESKTOP_INDENT[index],
@@ -56,8 +58,6 @@ export function ShelfRail({
           </Link>
         );
       })}
-      {/* The spine the tabs appear to be cut into. */}
-      <div className="hidden md:-order-1 md:col-start-1 md:block md:w-px" aria-hidden />
     </nav>
   );
 }

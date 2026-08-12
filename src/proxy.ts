@@ -6,7 +6,9 @@ const clerkConfigured = Boolean(
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY
 );
 
-const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
+// "/" is the public marketing/landing page — stays reachable signed-out.
+// Everything else (the library, a book's page, capture) needs a session.
+const isPublicRoute = createRouteMatcher(["/", "/sign-in(.*)", "/sign-up(.*)"]);
 
 // Without live Clerk keys the app still runs end-to-end against a fixed
 // demo user (see src/lib/auth.ts) — no auth gate to get in the way locally.

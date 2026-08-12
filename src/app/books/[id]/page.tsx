@@ -34,7 +34,7 @@ export default async function BookDetailPage({ params }: PageProps<"/books/[id]"
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 pb-24 pt-8 md:px-8 md:py-8">
       <Link
-        href="/"
+        href="/library"
         className="inline-flex w-fit items-center gap-1.5 text-sm text-ink-muted transition-colors hover:text-ink"
       >
         <ArrowLeft className="size-3.5" />
