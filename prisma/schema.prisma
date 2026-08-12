@@ -1,0 +1,220 @@
+// Linger data model — Section 7 of docs/BOOKMIND_SPEC.md.
+// Library -> Book -> Annotation -> AI Insight / Vocabulary -> Tag / Integration.
+
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [vector]
+}
+
+// -------------------------------------------------------------------------
+// User
+// -------------------------------------------------------------------------
+
+model User {
+  id        String   @id // Clerk user id — Clerk owns identity, we own reading data.
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  books        Book[]
+  annotations  Annotation[]
+  tags         Tag[]
+  integrations Integration[]
+
+  @@map("users")
+}
+
+// -------------------------------------------------------------------------
+// Book — the primary object every capture is anchored to.
+// -------------------------------------------------------------------------
+
+enum ReadingStatus {
+  WANT_TO_READ
+  READING
+  FINISHED
+  ABANDONED
+}
+
+model Book {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title           String
+  subtitle        String?
+  author          String
+  isbn            String?
+  coverUrl        String?
+  publisher       String?
+  publicationDate DateTime?
+  description     String?
+  language        String?
+  readingStatus   ReadingStatus @default(READING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  annotations Annotation[]
+
+  @@index([userId])
+  @@index([userId, title])
+  @@map("books")
+}
+
+// -------------------------------------------------------------------------
+// Annotation — a captured passage: the unit the rest of the product hangs off.
+// -------------------------------------------------------------------------
+
+enum CaptureSource {
+  MANUAL
+  PASTE
+  CAMERA
+  VOICE
+}
+
+model Annotation {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId         String
+  book           Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  sourceText     String // Verbatim passage — never silently modified by AI.
+  normalizedText String // Whitespace/OCR-artifact-cleaned text used for search.
+  pageNumber     Int?
+  chapter        String?
+  location       String?
+  sourceType     CaptureSource @default(MANUAL)
+  sourceImageUrl String? // Original camera capture, kept for re-OCR / audit.
+  personalNote   String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Reserved for V2 semantic search (docs/PRODUCT_DECISIONS.md). Unsupported
+  // so it's excluded from the generated client until embeddings ship;
+  // queried with $queryRaw once populated.
+  embedding Unsupported("vector(1536)")?
+
+  aiInsights  AIInsight[]
+  vocabulary  VocabularyEntry[]
+  tags        AnnotationTag[]
+
+  @@index([userId])
+  @@index([bookId])
+  @@index([userId, createdAt])
+  @@map("annotations")
+}
+
+// -------------------------------------------------------------------------
+// AI Insight — an explanation tied to exactly one annotation. Never freestanding.
+// -------------------------------------------------------------------------
+
+enum InsightType {
+  EXPLAIN
+  SIMPLIFY
+  CONTEXT
+  METAPHOR
+  PHILOSOPHICAL
+  EXAMPLE
+  TRANSLATE
+  FOLLOW_UP
+}
+
+enum ExplanationLevel {
+  SIMPLE
+  DEEP
+  ACADEMIC
+  CONVERSATIONAL
+}
+
+model AIInsight {
+  id           String            @id @default(cuid())
+  annotationId String
+  annotation   Annotation        @relation(fields: [annotationId], references: [id], onDelete: Cascade)
+  type         InsightType
+  level        ExplanationLevel?
+  prompt       String
+  response     String
+  model        String
+  createdAt    DateTime          @default(now())
+
+  @@index([annotationId])
+  @@map("ai_insights")
+}
+
+// -------------------------------------------------------------------------
+// Vocabulary Entry — a word looked up in the context of an annotation.
+// -------------------------------------------------------------------------
+
+model VocabularyEntry {
+  id                  String     @id @default(cuid())
+  annotationId        String
+  annotation          Annotation @relation(fields: [annotationId], references: [id], onDelete: Cascade)
+  word                String
+  definition          String
+  contextualDefinition String?
+  partOfSpeech        String?
+  pronunciation       String?
+  examples            String[]
+  synonyms            String[]
+  createdAt           DateTime   @default(now())
+
+  @@index([annotationId])
+  @@map("vocabulary_entries")
+}
+
+// -------------------------------------------------------------------------
+// Tag
+// -------------------------------------------------------------------------
+
+model Tag {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name   String
+
+  annotations AnnotationTag[]
+
+  @@unique([userId, name])
+  @@map("tags")
+}
+
+model AnnotationTag {
+  annotationId String
+  annotation   Annotation @relation(fields: [annotationId], references: [id], onDelete: Cascade)
+  tagId        String
+  tag          Tag        @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([annotationId, tagId])
+  @@map("annotation_tags")
+}
+
+// -------------------------------------------------------------------------
+// Integration — export/sync destinations. Credentials are never stored raw;
+// this table holds only a reference (e.g. an encrypted-at-rest secret's id
+// in the deployment's secret manager), per docs/BOOKMIND_SPEC.md Section 21.
+// -------------------------------------------------------------------------
+
+enum IntegrationProvider {
+  OBSIDIAN
+  NOTION
+}
+
+model Integration {
+  id                   String              @id @default(cuid())
+  userId               String
+  user                 User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider             IntegrationProvider
+  accessTokenReference String?
+  metadata             Json?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  @@unique([userId, provider])
+  @@map("integrations")
+}

@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Spectral, IBM_Plex_Mono } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+
+const clerkConfigured = Boolean(
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY
+);
 
 const spectral = Spectral({
   variable: "--font-spectral",
@@ -22,6 +28,11 @@ export const metadata: Metadata = {
   description:
     "Capture, understand, and revisit what you discover while reading.",
 };
+
+function Providers({ children }: { children: ReactNode }) {
+  if (!clerkConfigured) return children;
+  return <ClerkProvider>{children}</ClerkProvider>;
+}
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -49,8 +60,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         finish review, the verdict, and DESIGN.md.
       */}
       <body className="min-h-full flex flex-col bg-paper text-ink font-sans">
-        <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
-        <Toaster />
+        <Providers>
+          <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
