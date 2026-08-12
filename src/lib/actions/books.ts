@@ -58,6 +58,17 @@ export async function updateReadingStatus(bookId: string, status: ReadingStatus)
   revalidatePath(`/books/${bookId}`);
 }
 
+export async function listBooksForSelect() {
+  const user = await getCurrentUser();
+  if (!user) return [];
+
+  return db.book.findMany({
+    where: { userId: user.id },
+    select: { id: true, title: true, author: true },
+    orderBy: { updatedAt: "desc" },
+  });
+}
+
 export async function deleteBook(bookId: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Not signed in.");

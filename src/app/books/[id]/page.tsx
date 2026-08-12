@@ -4,6 +4,7 @@ import { ArrowLeft, BookOpen } from "lucide-react";
 
 import { AnnotationCard } from "@/components/annotation-card";
 import { BookCover } from "@/components/book-cover";
+import { CaptureButton } from "@/components/capture-button";
 import { ReadingStatusSelect } from "@/components/reading-status-select";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -103,6 +104,8 @@ export default async function BookDetailPage({ params }: PageProps<"/books/[id]"
           </div>
         )}
       </section>
+
+      <CaptureButton bookId={book.id} bookTitle={book.title} />
     </div>
   );
 }

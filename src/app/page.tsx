@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { AddBookDialog } from "@/components/add-book-dialog";
 import { BookCard } from "@/components/book-card";
+import { CaptureButton } from "@/components/capture-button";
 import { Input } from "@/components/ui/input";
 import { ShelfRail } from "@/components/shelf-rail";
 import { getCurrentUser } from "@/lib/auth";
@@ -109,6 +110,8 @@ export default async function LibraryPage({
           )}
         </div>
       </div>
+
+      {user && books.length > 0 && <CaptureButton />}
     </div>
   );
 }
